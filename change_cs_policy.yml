@@ -1,0 +1,19 @@
+---
+- hosts: netscalerlab
+ gather_facts: no  
+ tasks:
+   - name: Change CS Policy
+     delegate_to: localhost
+     netscaler_cs_vserver:
+       nsip: "{{ nsip }}"
+       nitro_user: "{{ nitro_user }}"
+       nitro_pass: "{{ nitro_pass }}"
+       state: present
+       # Trying to replicate action of the following command:
+       # bind cs vserver vanityserver -policyName lbtest2.pol -priority 5
+
+       name: vanityserver
+
+       policybindings:
+         - policyname: lbtest2.pol
+           priority: 5
