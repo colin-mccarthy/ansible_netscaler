@@ -1,0 +1,26 @@
+---
+
+- name: Disable servers on VIPs
+  connection: local
+  hosts: netscaler
+  gather_facts: False
+  vars:
+    disable_server: false
+
+  tasks:
+    - name: "1a. Disable servers defined in inventory/group_vars/netscalers/vars variable"
+      netscaler_server:
+        nitro_protocol: https
+        nitro_user: "{{ nitro_user }}"
+        nitro_pass: "{{ nitro_pass }}"
+        nsip: "{{ item.lb_ip }}"
+        validate_certs: no
+
+        name: "{{ item.srv_name }}"
+        disabled: "{{ disable_server }}"
+        delay: "{{ delay_time }}"
+      register: task_result
+
+      changed_when: task_result.loglines[3] is search('Disabling server')
+      when: disable_server
+      loop: "{{ epic_su_servers }}"
